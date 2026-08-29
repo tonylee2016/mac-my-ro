@@ -1,0 +1,21 @@
+.DS_Store
+
+# Built app bundles. build-app.sh writes ../dist; the Wine runtime and
+# game files are never stored in this repository.
+dist/
+*.app/Contents/Resources/wine/
+*.app/Contents/Resources/lib/
+*.app/Contents/_CodeSignature/
+
+# Downloads and payloads
+*.exe
+*.tar
+*.tar.gz
+*.dmg
+*.zip
+
+*.log
+
+# Tooling state, not project content
+.got/
+.wine-build/

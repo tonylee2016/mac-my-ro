@@ -1,0 +1,49 @@
+--- a/dlls/ntdll/unix/system.c
++++ b/dlls/ntdll/unix/system.c
+@@ -4645,6 +4645,44 @@
+  */
+ NTSTATUS WINAPI NtLoadDriver( const UNICODE_STRING *name )
+ {
+-    FIXME( "(%s), stub!\n", debugstr_us(name) );
+-    return STATUS_NOT_IMPLEMENTED;
++    static char sc_exe[] = "C:\\windows\\system32\\sc.exe";
++    static char start[] = "start";
++    const char *loader;
++    const WCHAR *service;
++    unsigned int len;
++    char service_name[256];
++    char *argv[5];
++    NTSTATUS ret;
++
++    if (!name || !name->Buffer || !(len = name->Length / sizeof(WCHAR)))
++        return STATUS_OBJECT_PATH_SYNTAX_BAD;
++
++    service = name->Buffer + len;
++    while (service > name->Buffer && service[-1] != '\\') service--;
++    if (service == name->Buffer || service == name->Buffer + len)
++        return STATUS_OBJECT_PATH_SYNTAX_BAD;
++
++    len = name->Buffer + len - service;
++    if (len >= sizeof(service_name) ||
++        ntdll_wcstoumbs( service, len, service_name, sizeof(service_name) - 1, FALSE ) != len)
++        return STATUS_NAME_TOO_LONG;
++    service_name[len] = 0;
++
++    if (!(loader = getenv( "WINELOADER" )) || !loader[0])
++    {
++        WARN( "WINELOADER is not set; cannot start driver service %s\n", debugstr_a(service_name) );
++        return STATUS_OBJECT_NAME_NOT_FOUND;
++    }
++
++    argv[0] = (char *)loader;
++    argv[1] = sc_exe;
++    argv[2] = start;
++    argv[3] = service_name;
++    argv[4] = NULL;
++
++    ret = __wine_unix_spawnvp( argv, TRUE );
++    TRACE( "loader %s started service %s for %s with exit status %#x\n",
++           debugstr_a(argv[0]), debugstr_a(service_name), debugstr_us(name), ret );
++    if (!ret) return STATUS_SUCCESS;
++    return STATUS_UNSUCCESSFUL;
+ }

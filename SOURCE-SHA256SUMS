@@ -1,0 +1,3 @@
+ac99c8ca4b3848f3e81784135f023df266b61c2345726ea55a50b3e030dd6872  crossover-sources-26.3.0.tar.gz
+7d04839b3fd7b175c85dba209a99b47b153d6998196e66380caa9931c17bb2e5  patches/crossover-26.3-unix-ntload-driver.patch
+5611e2fda7f976fc85740d1aadf9415351b4b140e731641df8eda0c8f90eb7bb  patches/wine-11.0-winhttp-number64.patch
